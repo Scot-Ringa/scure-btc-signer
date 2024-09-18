@@ -1,7 +1,7 @@
 import { deepStrictEqual, throws } from 'node:assert';
 import { should } from 'micro-should';
 import { hex, base64 } from '@scure/base';
-import * as btc from '../lib/esm/index.js';
+import * as btc from '../esm/index.js';
 import { secp256k1, schnorr as secp256k1_schnorr } from '@noble/curves/secp256k1';
 import { sha256 } from '@noble/hashes/sha256';
 import * as P from 'micro-packed';
@@ -42,6 +42,19 @@ should('BTC: P2PKH addresses', () => {
   deepStrictEqual(btc.getAddress('pkh', priv), ADDR_1);
   const pub = secp256k1.getPublicKey(priv, true);
   deepStrictEqual(btc.p2pkh(pub).address, ADDR_1);
+});
+
+should('LTC address parsing (GH-112)', () => {
+  const ltc = {
+    bech32: 'ltc',
+    pubKeyHash: 0x30,
+    scriptHash: 0x32,
+    wif: 0xb0,
+  };
+  deepStrictEqual(btc.Address(ltc).decode('LTCHodBXqzzfDvkL1kA3dHRVsx4SCL3Y13'), {
+    hash: hex.decode('57707ca1471cab4b8cbd32a0e92f538a661e4c53'),
+    type: 'pkh',
+  });
 });
 
 // Same as above
